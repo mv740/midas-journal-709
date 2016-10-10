@@ -12,13 +12,11 @@
 #include "vtkMath.h"
 #include "vtkPlaneSource.h"
 
-#include <vtkstd/set>
+#include <set>
 
 #include "vtkRANSACPlane.h"
 
 vtkStandardNewMacro(vtkRANSACPlane);
-vtkCxxRevisionMacro(vtkRANSACPlane, "$Revision$");
-
 
 //-----------------------------------------------------------------------------
 vtkRANSACPlane::vtkRANSACPlane()
@@ -106,7 +104,7 @@ int vtkRANSACPlane::RequestData(vtkInformation *vtkNotUsed(request),
     {
     cout << "Iteration: " << iter << endl;
     //pick NumPointsToFit random indices
-    vtkstd::vector<unsigned int> randomIndices = UniqueRandomIndices(input->GetNumberOfPoints(), NumPointsToFit);
+    std::vector<unsigned int> randomIndices = UniqueRandomIndices(input->GetNumberOfPoints(), NumPointsToFit);
         
     vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New();
     ExtractPoints(input, randomIndices, points);
@@ -115,7 +113,7 @@ int vtkRANSACPlane::RequestData(vtkInformation *vtkNotUsed(request),
     vtkSmartPointer<vtkPlane> plane = vtkSmartPointer<vtkPlane>::New();
     BestFitPlane(points, plane);
         
-    vtkstd::vector<unsigned int> inlierIndices = this->DetermineInliers(input->GetPoints(), plane);
+    std::vector<unsigned int> inlierIndices = this->DetermineInliers(input->GetPoints(), plane);
     cout << "Number of inliers: " << inlierIndices.size() << endl;
     
     if(inlierIndices.size() > maxInliers)
@@ -159,11 +157,11 @@ void vtkRANSACPlane::PrintSelf(ostream &os, vtkIndent indent)
   this->Superclass::PrintSelf(os,indent);
 }
 
-vtkstd::vector<unsigned int> vtkRANSACPlane::DetermineInliers(vtkPoints* points, vtkPlane* plane)
+std::vector<unsigned int> vtkRANSACPlane::DetermineInliers(vtkPoints* points, vtkPlane* plane)
 {
   //find the distance from every point to the plane
 	
-  vtkstd::vector<unsigned int> inlierIndices;
+  std::vector<unsigned int> inlierIndices;
   for(unsigned int i = 0; i < points->GetNumberOfPoints(); i++)
     {
     //double distance = fabs(vgl_distance(Plane, Points[i]));
@@ -189,7 +187,7 @@ vtkstd::vector<unsigned int> vtkRANSACPlane::DetermineInliers(vtkPoints* points,
 ///////////////////////////////////////
 ////////// Helper Functions /////////////
 ////////////////////////////////////////
-vtkstd::vector<unsigned int> UniqueRandomIndices(const unsigned int maxIndex, const unsigned int numIndices)
+std::vector<unsigned int> UniqueRandomIndices(const unsigned int maxIndex, const unsigned int numIndices)
 {
   //generate Number unique random indices from 0 to MAX
 
@@ -202,7 +200,7 @@ vtkstd::vector<unsigned int> UniqueRandomIndices(const unsigned int maxIndex, co
     return indices;
     }
 		
-  vtkstd::set<unsigned int> S;
+  std::set<unsigned int> S;
   while(S.size() < numIndices)
     {
     S.insert(vtkMath::Random(0, maxIndex));
@@ -216,7 +214,7 @@ vtkstd::vector<unsigned int> UniqueRandomIndices(const unsigned int maxIndex, co
   return indices;
 }
 
-void ExtractPoints(vtkPointSet* points, vtkstd::vector<unsigned int> indices, vtkPoints* output)
+void ExtractPoints(vtkPointSet* points, std::vector<unsigned int> indices, vtkPoints* output)
 {
   for(unsigned int i = 0; i < indices.size(); i++)
     {
@@ -260,7 +258,7 @@ void BestFitPlane(vtkPoints *points, vtkPlane *BestPlane)
   //find the center of mass of the points
   double Center[3];
   CenterOfMass(points, Center);
-  //vtkstd::cout << "Center of mass: " << Center[0] << " " << Center[1] << " " << Center[2] << vtkstd::endl;
+  //std::cout << "Center of mass: " << Center[0] << " " << Center[1] << " " << Center[2] << std::endl;
   
   //Compute sample covariance matrix
   double **a = create_matrix<double> ( 3,3 );
