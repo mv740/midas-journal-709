@@ -24,11 +24,11 @@ class vtkRANSACPlane : public vtkPolyDataAlgorithm
 
   // Description:
   // Specify the source object. This is the object that will be moved during the transformation.
-  vtkPolyData *GetSource();
+  //vtkPolyData *GetSource();
 
   // Description:
   // Specify the target object. This is the object that will stay in place.
-  vtkPolyData *GetTarget();
+  //vtkPolyData *GetTarget();
 
   void AddSourceConnection(vtkAlgorithmOutput* input);
   void RemoveAllSources();
